@@ -12,11 +12,14 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+var cors = require('cors');
+
 var User = require('./models/user');
 var Message = require('./models/message');
 const user_controller = require('./controllers/users');
 
 const app = express();
+app.use(cors());
 // middleware to handle json responses
 app.use(express.json());
 // middleware to handle string responses
