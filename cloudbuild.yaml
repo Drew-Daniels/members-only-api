@@ -14,5 +14,10 @@ steps:
       - 'S3_AVATARS=${_S3_AVATARS}'
       - 'NODE_ENV=${_NODE_ENV}'
   - name: "gcr.io/cloud-builders/gcloud"
-    args: ["run", "deploy"]
+    args: ["run", "deploy", "members-only-api",
+           "--image", "gcr.io/cloudrun/members-only-api/members-only-api",
+           "--platform", "managed",
+           "--region", "us-central1",
+           "--allow-unauthenticated"
+    ]
 timeout: "1600s"
