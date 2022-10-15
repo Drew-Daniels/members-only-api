@@ -15,7 +15,7 @@ steps:
       - 'NODE_ENV=${_NODE_ENV}'
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["run", "deploy", "members-only-api",
-           "--image", "gcr.io/cloudrun/members-only-api/members-only-api:latest",
+           "--image", "gcr.io/members-only-api/members-only-api:latest",
            "--platform", "managed",
            "--region", "us-central1",
            "--allow-unauthenticated"
