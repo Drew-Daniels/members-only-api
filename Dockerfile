@@ -1,4 +1,4 @@
-FROM node:12-slim
+FROM node:16-slim
 
 # Create an app directory in the docker
 WORKDIR /app
