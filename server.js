@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'prod') {
 } else {
   app.use(logger('dev'));
   mongoDB = process.env.DB_DEV;
-  PORT = 5000;
+  PORT = 8080;
 }
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
