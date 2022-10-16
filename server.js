@@ -83,6 +83,11 @@ passport.deserializeUser(function(user, cb) {
 });
 
 // api routes
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", process.env.ACCEPTED_CLIENT_ORIGIN);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 app.get('/api/auth', async (req, res) => {
   if (req.isAuthenticated()) {
     const user = await User.findById(req.user.id);
