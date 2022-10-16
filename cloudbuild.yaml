@@ -6,7 +6,7 @@ steps:
     entrypoint: npm
     args: ["run", "create-env"]
     env:
-      - 'ACCEPTED_CLIENT_ORIGIN=${_MY_SECRET_KEY}'
+      - 'ACCEPTED_CLIENT_ORIGIN=${_ACCEPTED_CLIENT_ORIGIN}'
       - 'DB_PROD=${_DB_PROD}'
       - 'NODE_ENV=${_NODE_ENV}'
       - 'PORT=${_PORT}'
