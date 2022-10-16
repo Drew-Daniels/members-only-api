@@ -9,7 +9,6 @@ steps:
       - 'ACCEPTED_CLIENT_ORIGIN=${_ACCEPTED_CLIENT_ORIGIN}'
       - 'DB_PROD=${_DB_PROD}'
       - 'NODE_ENV=${_NODE_ENV}'
-      - 'PORT=${_PORT}'
       - 'S3_AVATARS=${_S3_AVATARS}'
       - 'S3_IMAGES=${_S3_IMAGES}'
   - name: "gcr.io/cloud-builders/gcloud"
