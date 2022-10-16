@@ -18,22 +18,24 @@ var Message = require('./models/message');
 const user_controller = require('./controllers/users');
 
 const app = express();
-app.use(cors({credentials: true, origin: [/(localhost)/, 'https://members-only-frontend-jum6mechlq-uc.a.run.app'], }));
+
+var PORT;
+var mongoDB;
+if (process.env.NODE_ENV === 'prod') {
+  app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
+  PORT = process.env.PORT;
+  mongoDB = process.env.DB_PROD;
+} else {
+  app.use(logger('dev'));
+  app.use(cors({credentials: true, origin: /(localhost)/, }));
+  PORT = 5000;
+  mongoDB = process.env.DB_DEV;
+}
 // middleware to handle json responses
 app.use(express.json());
 // middleware to handle string responses
 app.use(express.urlencoded({ extended: false }));
-// set up mongoose connection
-var mongoDB;
-var PORT;
-if (process.env.NODE_ENV === 'prod') {
- mongoDB = process.env.DB_PROD;
- PORT = process.env.PORT;
-} else {
-  app.use(logger('dev'));
-  mongoDB = process.env.DB_DEV;
-  PORT = 8080;
-}
+
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -163,7 +165,6 @@ app.delete('/api/messages/:messageId', async (req, res) => {
 
 app.post('/api/login', passport.authenticate('local'), (req, res) => {
   if (!req.user) { return res.status(401).json({ msg: req.authInfo.msg }) }
-  res.redirect('/')
   return res.status(200).json({ user: req.user, msg: req.authInfo.msg });
 });
 app.post('/api/signup', user_controller.create_user);
