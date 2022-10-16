@@ -2,7 +2,6 @@ var env = require('dotenv').config();
 var envExpander = require('dotenv-expand');
 envExpander.expand(env);
 
-const path = require('path');
 const express = require('express');
 const logger = require('morgan');
 var mongoose = require('mongoose');
@@ -19,7 +18,7 @@ var Message = require('./models/message');
 const user_controller = require('./controllers/users');
 
 const app = express();
-app.use(cors());
+app.use(cors({credentials: true, origin: 'https://members-only-client-7vlpbfc5ra-uc.a.run.app/'}));
 // middleware to handle json responses
 app.use(express.json());
 // middleware to handle string responses
@@ -164,6 +163,7 @@ app.delete('/api/messages/:messageId', async (req, res) => {
 
 app.post('/api/login', passport.authenticate('local'), (req, res) => {
   if (!req.user) { return res.status(401).json({ msg: req.authInfo.msg }) }
+  res.redirect('/')
   return res.status(200).json({ user: req.user, msg: req.authInfo.msg });
 });
 app.post('/api/signup', user_controller.create_user);
@@ -190,14 +190,5 @@ app.delete('/api/logout', (req, res, next) => {
   }
   res.status(200).end();
 });
-
-// react routes
-app.use(express.static(path.join(__dirname, 'client/build')));
-// set virtual static paths
-// app.use('/', express.static(path.join(__dirname, 'client')));
-// app.use('/login', express.static(path.join(__dirname, 'client')));
-// app.use('/signup', express.static(path.join(__dirname, 'client')));
-// app.use('/membership', express.static(path.join(__dirname, 'client')));
-// app.use('/logout', express.static(path.join(__dirname, 'client')));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
