@@ -2,11 +2,16 @@ steps:
   - name: node:16.18.0
     entrypoint: npm
     args: ["install"]
+  - name: node:16.18.0
+    entrypoint: npm
+    args: ["run", "create-env"]
+    env:
+      - 'ACCEPTED_CLIENT_ORIGIN=${_MY_SECRET_KEY}'
+      - 'DB_PROD=${_DB_PROD}'
+      - 'NODE_ENV=${_NODE_ENV}'
+      - 'PORT=${_PORT}'
+      - 'S3_AVATARS=${_S3_AVATARS}'
+      - 'S3_IMAGES=${_S3_IMAGES}'
   - name: "gcr.io/cloud-builders/gcloud"
-    args: ["run", "deploy", "members-only-api",
-           "--image", "gcr.io/members-only-api/members-only-api",
-           "--platform", "managed",
-           "--region", "us-central1",
-           "--allow-unauthenticated"
-    ]
+    args: ["run", "deploy"]
 timeout: "1600s"
