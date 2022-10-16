@@ -83,7 +83,6 @@ passport.deserializeUser(function(user, cb) {
 });
 
 // api routes
-app.options('*', cors())
 app.get('/api/auth', async (req, res) => {
   if (req.isAuthenticated()) {
     const user = await User.findById(req.user.id);
