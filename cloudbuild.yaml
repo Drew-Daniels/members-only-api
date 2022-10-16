@@ -11,6 +11,7 @@ steps:
       - 'NODE_ENV=${_NODE_ENV}'
       - 'S3_AVATARS=${_S3_AVATARS}'
       - 'S3_IMAGES=${_S3_IMAGES}'
+      - 'PORT=${_PORT}'
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["run", "deploy"]
 timeout: "1600s"
