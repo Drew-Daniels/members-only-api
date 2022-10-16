@@ -21,7 +21,6 @@ const app = express();
 
 var PORT = process.env.PORT || 8080;
 var mongoDB;
-
 if (process.env.NODE_ENV === 'prod') {
   app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
   mongoDB = process.env.DB_PROD;
