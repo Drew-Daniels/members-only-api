@@ -11,7 +11,6 @@ steps:
       - 'NODE_ENV=${_NODE_ENV}'
       - 'S3_AVATARS=${_S3_AVATARS}'
       - 'S3_IMAGES=${_S3_IMAGES}'
-      - 'PORT=${_PORT}'
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["run", "deploy", "members-only-365716",
            "--image", "gcr.io/members-only-365716/members-only-api:latest",
