@@ -18,7 +18,7 @@ var Message = require('./models/message');
 const user_controller = require('./controllers/users');
 
 const app = express();
-app.use(cors({credentials: true, origin: 'https://members-only-client-7vlpbfc5ra-uc.a.run.app'}));
+app.use(cors({credentials: true, origin: [/(localhost)/, 'https://members-only-frontend-jum6mechlq-uc.a.run.app'], }));
 // middleware to handle json responses
 app.use(express.json());
 // middleware to handle string responses
