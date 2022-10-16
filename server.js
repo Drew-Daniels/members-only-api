@@ -19,16 +19,14 @@ const user_controller = require('./controllers/users');
 
 const app = express();
 
-var PORT;
+var PORT = process.env.PORT || 8080;
 var mongoDB;
 if (process.env.NODE_ENV === 'prod') {
   app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
-  PORT = process.env.PORT;
   mongoDB = process.env.DB_PROD;
 } else {
   app.use(logger('dev'));
   app.use(cors({credentials: true, origin: /(localhost)/, }));
-  PORT = 5000;
   mongoDB = process.env.DB_DEV;
 }
 // middleware to handle json responses
