@@ -1,22 +1,32 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var bcrypt = require('bcryptjs');
-const {model, Schema} = require("mongoose");
-
+const { model, Schema } = require("mongoose");
 const UserSchema = new Schema({
-  id: Schema.Types.ObjectId,
-  firstName: String,
-  lastName: String,
-  username: String,
-  hash: String,
-  salt: String,
-  isMember: { type: Boolean, default: false },
-  isAdmin: { type: Boolean, default: false },
+    id: Schema.Types.ObjectId,
+    firstName: String,
+    lastName: String,
+    username: String,
+    hash: String,
+    salt: String,
+    isMember: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
 }, {
-  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
-  methods: {
-    async verifyPassword(password) {
-      return bcrypt.compare(password, this.hash)
-    },
-  }
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+    methods: {
+        verifyPassword(password) {
+            return __awaiter(this, void 0, void 0, function* () {
+                return bcrypt.compare(password, this.hash);
+            });
+        },
+    }
 });
-
 module.exports = model('User', UserSchema);

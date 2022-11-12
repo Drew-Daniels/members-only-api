@@ -13,4 +13,4 @@ RUN npm install --only=production
 COPY . ./
 
 # Run the server
-CMD node server.js
+CMD node server.ts
