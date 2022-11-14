@@ -13,13 +13,12 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-// var cors = require('cors');
-//
-// const corsOpts = {
-//   origin: 'http://localhost:3000',
-//   optionsSuccessStatus: 200,
-//   credentials: true,
-// }
+var cors = require('cors');
+
+const corsOpts = {
+  origin: process.env.ACCEPTED_CLIENT_ORIGIN, // production url
+  credentials: true, // pass cookies on all requests
+}
 
 var User = require('./models/user');
 var Message = require('./models/message');
@@ -32,11 +31,10 @@ const app = express();
 var PORT = process.env.PORT || 8080;
 var mongoDB;
 if (process.env.NODE_ENV === 'prod') {
-  // app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
+  app.use(cors(corsOpts))
   mongoDB = process.env.DB_PROD;
 } else {
   app.use(logger('dev'));
-  // app.use(cors({credentials: true, origin: /(localhost)/, }));
   mongoDB = process.env.DB_DEV;
 }
 // middleware to handle json responses
@@ -92,6 +90,9 @@ passport.deserializeUser(function(user: IUser, cb: Function) {
     return cb(null, user);
   });
 });
+
+// enable pre-flight requests for all routes
+app.options('*', cors(corsOpts))
 
 app.get('/api/auth', async (req: Request, res: Response) => {
   if (req.isAuthenticated()) {// @ts-ignore
