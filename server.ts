@@ -1,9 +1,5 @@
 import {NextFunction, Request, Response} from "express";
 
-interface AuthenticatedRequest extends Request {
-  user: User;
-}
-
 var env = require('dotenv').config();
 var envExpander = require('dotenv-expand');
 envExpander.expand(env);
@@ -17,22 +13,30 @@ var MongoDBStore = require('connect-mongodb-session')(session);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-var cors = require('cors');
+// var cors = require('cors');
+//
+// const corsOpts = {
+//   origin: 'http://localhost:3000',
+//   optionsSuccessStatus: 200,
+//   credentials: true,
+// }
 
 var User = require('./models/user');
 var Message = require('./models/message');
 const user_controller = require('./controllers/users');
+
+import { IUser, IMessage } from "./types";
 
 const app = express();
 
 var PORT = process.env.PORT || 8080;
 var mongoDB;
 if (process.env.NODE_ENV === 'prod') {
-  app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
+  // app.use(cors({ credentials: true, origin: process.env.ACCEPTED_CLIENT_ORIGIN }))
   mongoDB = process.env.DB_PROD;
 } else {
   app.use(logger('dev'));
-  app.use(cors({credentials: true, origin: /(localhost)/, }));
+  // app.use(cors({credentials: true, origin: /(localhost)/, }));
   mongoDB = process.env.DB_DEV;
 }
 // middleware to handle json responses
@@ -66,9 +70,9 @@ app.use(passport.session());
 // set authentication strategy
 passport.use(new LocalStrategy(
   function authenticateUser(username: string, password: string, done: Function) {
-    User.findOne({ username }, async function onUserSearched(err: Error, user) {
+    User.findOne({ username }, async function onUserSearched(err: Error, user: IUser) {
       if (err) { return done(err); }
-      if (!user) { return done(null, false); }
+      if (!user) { return done(null, false); }// @ts-ignore
       const authenticated = await user.verifyPassword(password);
       if (!authenticated) { return done(null, false); }
       return done(null, user);
@@ -76,45 +80,27 @@ passport.use(new LocalStrategy(
   }
 ));
 
-interface User {
-  _id: string;
-  username: string;
-  // other props?
-}
-
 // user info to store on session
-passport.serializeUser(function(user: User, cb: Function) {
+passport.serializeUser(function(user: IUser, cb: Function) {
   process.nextTick(function() {
     cb(null, { id: user._id, username: user.username });
   });
 });
 // user info to retrieve with info from session
-passport.deserializeUser(function(user: User, cb: Function) {
+passport.deserializeUser(function(user: IUser, cb: Function) {
   process.nextTick(function() {
     return cb(null, user);
   });
 });
 
-// api routes
-app.use(function(req: Request, res: Response, next: NextFunction) {
-  res.header("Access-Control-Allow-Origin", process.env.ACCEPTED_CLIENT_ORIGIN);
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 app.get('/api/auth', async (req: Request, res: Response) => {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated()) {// @ts-ignore
     const user = await User.findById(req.user.id);
     res.status(200).json({ user: user });
   } else {
     res.status(200).json({ user: null });
   }
 });
-
-interface Message {
-  title: string;
-  body: string;
-  updatedAt: string;
-}
 
 app.get('/api/messages', async (req: Request, res: Response) => {
   var messages;
@@ -128,7 +114,7 @@ app.get('/api/messages', async (req: Request, res: Response) => {
 
   async function getAnonymousMessages() {
     const messages = await getMessages();
-    return messages.map((message: Message) => {
+    return messages.map((message: IMessage) => {
       return {
         author: { username: 'Anonymous' },
         title: message.title,
@@ -141,6 +127,7 @@ app.get('/api/messages', async (req: Request, res: Response) => {
     return await Message.find().populate('author', 'username').exec() || [];
   }
 });
+
 app.post(
   '/api/messages',[
   check('author').isString().withMessage('author must be sent with message'),
@@ -172,7 +159,7 @@ app.post(
 
 app.delete('/api/messages/:messageId', async (req: Request, res: Response) => {
   if (req.isAuthenticated()) {
-    try {
+    try {// @ts-ignore
       const user = await User.findById(req.user.id).exec();
       if (user.isAdmin) {
         await Message.findByIdAndDelete(req.params.messageId);
@@ -186,20 +173,22 @@ app.delete('/api/messages/:messageId', async (req: Request, res: Response) => {
   }
 })
 
-app.post('/api/login', passport.authenticate('local'), (req: Request, res: Response) => {
-  if (!req.user) { return res.status(401).json({ msg: req.authInfo.msg }) }
+app.post('/api/login', passport.authenticate('local'), (req: Request, res: Response) => {// @ts-ignore
+  if (!req.user) { return res.status(401).json({ msg: req.authInfo.msg }) }// @ts-ignore
   return res.status(200).json({ user: req.user, msg: req.authInfo.msg });
 });
 app.post('/api/signup', user_controller.create_user);
+
 app.post('/api/membership', async (req: Request, res: Response) => {
   // validate secret code
-  if (req.isAuthenticated() && req.body.secret === 'VIP') {
+  if (req.isAuthenticated() && req.body.secret === 'VIP') {// @ts-ignore
     await User.findByIdAndUpdate(req.user.id, { isAdmin: true });
     res.status(200).end();
   } else {
     res.status(401).end();
   }
-})
+});
+
 app.delete('/api/logout', (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     req.logout(function onLoggedOut(err: Error) {

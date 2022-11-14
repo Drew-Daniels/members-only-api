@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const User = require('../models/user');
 const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
@@ -30,9 +31,7 @@ exports.create_user = [
             }
             const userExists = !!(yield User.count({ username: req.body.username }).exec());
             if (userExists) {
-                const err = new Error('A user with that');
-                err.status = 409;
-                return next(err);
+                res.status(409).send({ msg: 'A user with that username already exists' });
             }
             const { firstName, lastName, username, password } = req.body;
             const hash = yield bcrypt.hash(password, 10);

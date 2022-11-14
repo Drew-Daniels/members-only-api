@@ -1,5 +1,6 @@
 var bcrypt = require('bcryptjs');
-const {model, Schema} = require("mongoose");
+import * as mongoose from 'mongoose';
+const { model, Schema } = mongoose;
 
 const UserSchema = new Schema({
   id: Schema.Types.ObjectId,
