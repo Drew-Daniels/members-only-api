@@ -7,7 +7,9 @@ exports.create_user = [
   check('firstName').isLength( { min: 2, max: 30 }).withMessage('First Name must be between 2 and 30 characters.'),
   check('lastName').isLength({ min: 5, max: 30 }).withMessage('Last Name must be between 5 and 30 characters'),
   check('username').isEmail().withMessage('Username must be a valid email address'),
-  check('password').isStrongPassword().withMessage('Password must be a strong password'),
+  check('password')
+    .matches(/^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,}$/)
+    .withMessage('Must be a strong password that contains 2 uppercase letters, one special case letter, two digits, three lower case letters, and a length of 8 or more characters'),
   // @ts-ignore
   check('passwordConfirm').custom((value: string, { req }) => {
     if (value !== req.body.password) {
